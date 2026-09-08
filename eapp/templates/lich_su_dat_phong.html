@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Lịch Sử Đặt Phòng - Luxury Hotel{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 120px;">
+        <h3 class="fw-bold mb-4"><i class="fa-solid fa-clock-rotate-left text-gold me-2"></i>Đơn Đặt Phòng Của Tôi</h3>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped m-0 align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Mã Đơn</th>
+                            <th>Ngày Nhận (Dự kiến)</th>
+                            <th>Ngày Trả (Dự kiến)</th>
+                            <th>Số Lượng Khách</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for don in danh_sach_don %}
+                        <tr>
+                            <td class="fw-bold text-gold">{{ don.maDatPhong }}</td>
+                            <td>{{ don.ngayNhanDuKien.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ don.ngayTraDuKien.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ don.soLuongKhach }} người</td>
+                            <td>
+                                {% if don.trangThai == 'Chờ nhận phòng' %}
+                                    <span class="badge bg-gold text-dark"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ nhận phòng</span>
+                                {% elif don.trangThai == 'Đã cọc (Online)' %}
+                                    <span class="badge" style="background-color: #005baa;"><i class="fa-solid fa-check-circle me-1"></i>Đã cọc VNPay</span>
+                                {% elif don.trangThai == 'Đang thuê' %}
+                                    <span class="badge bg-success"><i class="fa-solid fa-bed me-1"></i>Đang thuê</span>
+                                {% elif don.trangThai == 'Đã trả phòng' %}
+                                    <span class="badge bg-secondary"><i class="fa-solid fa-check-double me-1"></i>Đã trả phòng</span>
+                                {% elif don.trangThai == 'Đã thanh toán' %}
+                                    <span class="badge bg-info"><i class="fa-solid fa-file-invoice-dollar me-1"></i>Đã thanh toán</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ don.trangThai }}</span>
+                                {% endif %}
+                            </td>
+                            <!-- CỘT THAO TÁC (TÍCH HỢP GỌI DỊCH VỤ & XEM BILL) -->
+                            <td>
+                                {% if don.trangThai == 'Đang thuê' or don.trangThai == 'Chờ nhận phòng' or don.trangThai == 'Đã cọc (Online)' %}
+                                    <a href="/goi-dich-vu/{{ don.maDatPhong }}" class="btn btn-sm btn-warning fw-bold mb-1 w-100">
+                                        <i class="fa-solid fa-utensils me-1"></i> Gọi Dịch Vụ
+                                    </a>
+                                {% endif %}
+
+                                {% if don.trangThai == 'Chờ nhận phòng' %}
+                                    <a href="/thanh-toan-online/{{ don.maDatPhong }}" class="btn btn-sm btn-gold fw-bold mb-1 w-100" style="background-color: #005baa; border-color: #005baa;">
+                                        <i class="fa-solid fa-credit-card me-1"></i> Thanh Toán Cọc
+                                    </a>
+                                {% endif %}
+
+                                {% if don.trangThai == 'Đã thanh toán' %}
+                                    <a href="/chi-tiet-hoa-don/{{ don.maDatPhong }}" class="btn btn-sm btn-outline-dark fw-bold w-100 mb-1">
+                                        <i class="fa-solid fa-eye me-1"></i> Xem Bill
+                                    </a>
+                                {% endif %}
+
+                                {% if don.trangThai in ('Đã thanh toán', 'Đã trả phòng', 'Đã cọc (Online)') %}
+                                    <a href="/review/{{ don.maDatPhong }}" class="btn btn-sm btn-outline-warning fw-bold w-100">
+                                        <i class="fa-solid fa-star me-1"></i> Đánh Giá
+                                    </a>
+                                {% elif don.trangThai != 'Đang thuê' and don.trangThai != 'Chờ nhận phòng' and don.trangThai != 'Đã cọc (Online)' and don.trangThai != 'Đã thanh toán' %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="py-5 text-muted">
+                                <i class="fa-solid fa-box-open fs-1 d-block mb-3"></i>
+                                Ní chưa có đơn đặt phòng nào. <a href="/" class="text-gold text-decoration-none">Đặt phòng ngay!</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

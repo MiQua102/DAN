@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ loai.tenLoaiPhong }} - Luxury Hotel{% endblock %}
+
+{% block extra_css %}
+.hero-room {
+    position: relative;
+    height: 60vh;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%),
+                url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+    display: flex;
+    align-items: flex-end;
+}
+.hero-room .hero-content { padding: 40px; width: 100%; }
+.hero-room h1 { color: #fff; font-family: "Playfair Display", serif; font-size: 2.8rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.hero-room .badge-price { font-size: 1.4rem; background: #D4AF37; color: #fff; padding: 10px 24px; border-radius: 50px; }
+
+.info-card { border: none; border-radius: 16px; transition: transform 0.2s; }
+.info-card:hover { transform: translateY(-4px); }
+.info-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+.amenity-item {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.2s;
+    height: 100%;
+}
+.amenity-item:hover {
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+.amenity-item i { font-size: 1.6rem; margin-bottom: 8px; display: block; }
+.amenity-item .name { font-size: 0.85rem; font-weight: 600; color: #333; }
+.amenity-item .desc { font-size: 0.75rem; color: #888; margin-top: 4px; }
+
+.review-card { border-left: 4px solid #D4AF37; }
+
+.gallery-grid img {
+    border-radius: 12px;
+    object-fit: cover;
+    height: 200px;
+    width: 100%;
+    transition: transform 0.3s;
+}
+.gallery-grid img:hover { transform: scale(1.03); }
+
+.stat-number { font-size: 1.8rem; font-weight: 700; color: #4A3B32; }
+.stat-label { font-size: 0.85rem; color: #888; }
+
+.availability-badge { font-size: 0.9rem; padding: 8px 16px; }
+{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<div class="hero-room">
+    <div class="hero-content">
+        <div class="container" style="margin-top: 120px;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a href="/" class="text-white text-decoration-none">Trang Chủ</a></li>
+                    <li class="breadcrumb-item active text-warning">{{ loai.tenLoaiPhong }}</li>
+                </ol>
+            </nav>
+            <h1 class="fw-bold mb-3">{{ loai.tenLoaiPhong }}</h1>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <span class="badge-price">
+                    <i class="fa-solid fa-tag me-1"></i>{{ "{:,.0f}".format(loai.giaCoBan) }} ₫ / đêm
+                </span>
+                {% if avg_rating %}
+                <span class="badge bg-white text-dark px-3 py-2 rounded-pill fs-6">
+                    <i class="fa-solid fa-star text-warning me-1"></i>{{ avg_rating|round(1) }} ({{ review_count }} đánh giá)
+                </span>
+                {% endif %}
+                {% if so_phong_trong > 0 %}
+                <span class="badge bg-success availability-badge rounded-pill">
+                    <i class="fa-solid fa-check-circle me-1"></i>Còn {{ so_phong_trong }}/{{ tong_phong }} phòng trống
+                </span>
+                {% else %}
+                <span class="badge bg-danger availability-badge rounded-pill">
+                    <i class="fa-solid fa-times-circle me-1"></i>Hết phòng
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Main Content -->
+        <div class="col-lg-8">
+
+            <!-- THÔNG TIN CHUNG -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="card info-card shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="info-icon bg-dark-charcoal bg-opacity-10 text-gold mx-auto mb-2">
+                                <i class="fa-solid fa-user-group"></i>
+                            </div>
+                            <div class="stat-number">{{ loai.sucChua }}</div>
+                            <div class="stat-label">Sức chứa (người)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card info-card shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="info-icon bg-success bg-opacity-10 text-success mx-auto mb-2">
+                                <i class="fa-solid fa-ruler-combined"></i>
+                            </div>
+                            <div class="stat-number">{{ loai.dienTich|int if loai.dienTich else '—' }}</div>
+                            <div class="stat-label">Diện tích (m²)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card info-card shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="info-icon bg-gold bg-opacity-10 text-warning mx-auto mb-2">
+                                <i class="fa-solid fa-door-open"></i>
+                            </div>
+                            <div class="stat-number">{{ tong_phong }}</div>
+                            <div class="stat-label">Tổng số phòng</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card info-card shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="info-icon bg-info bg-opacity-10 text-info mx-auto mb-2">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <div class="stat-number">{{ avg_rating|round(1) if avg_rating else '—' }}</div>
+                            <div class="stat-label">Đánh giá TB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÔ TẢ -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3"><i class="fa-solid fa-file-lines text-gold me-2"></i>Mô Tả</h4>
+                    <p class="text-secondary lh-lg mb-0">
+                        {{ loai.moTa if loai.moTa else 'Phòng được thiết kế hiện đại, sang trọng với đầy đủ tiện nghi cao cấp. Mang đến cho quý khách trải nghiệm nghỉ dưỡng tuyệt vời nhất.' }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- TIỆN NGHI -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">
+                        <i class="fa-solid fa-concierge-bell text-gold me-2"></i>Tiện Nghi Phòng
+                        {% if tien_nghis %}
+                        <span class="badge bg-gold text-white ms-2" style="background-color: #D4AF37;">{{ tien_nghis|length }}</span>
+                        {% endif %}
+                    </h4>
+                    {% if tien_nghis %}
+                    <div class="row g-3">
+                        {% for tn in tien_nghis %}
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="amenity-item">
+                                {% if 'wifi' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-wifi text-success"></i>
+                                {% elif 'tv' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-tv text-gold"></i>
+                                {% elif 'sáng' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-mug-hot text-warning"></i>
+                                {% elif 'jacuzzi' in tn.tenTienNghi.lower() or 'tắm' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-hot-tub-person text-info"></i>
+                                {% elif 'minibar' in tn.tenTienNghi.lower() or 'rượu' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-wine-glass text-danger"></i>
+                                {% elif 'nôi' in tn.tenTienNghi.lower() or 'em bé' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-baby-carriage text-gold"></i>
+                                {% elif 'xông hơi' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-spa text-success"></i>
+                                {% elif 'phòng 24' in tn.tenTienNghi.lower() or 'dịch vụ' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-bell-concierge text-gold"></i>
+                                {% elif 'áo choàng' in tn.tenTienNghi.lower() or 'dép' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-shirt text-secondary"></i>
+                                {% elif 'cà phê' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-mug-saucer text-dark"></i>
+                                {% elif 'két sắt' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-lock text-secondary"></i>
+                                {% elif 'ban công' in tn.tenTienNghi.lower() or 'view' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-mountain-sun text-success"></i>
+                                {% elif 'giặt' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-jug-detergent text-info"></i>
+                                {% elif 'hoa' in tn.tenTienNghi.lower() or 'nến' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-heart text-danger"></i>
+                                {% elif 'bể bơi' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-water-ladder text-gold"></i>
+                                {% elif 'loa' in tn.tenTienNghi.lower() or 'bluetooth' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-volume-high text-gold"></i>
+                                {% elif 'đồ chơi' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-puzzle-piece text-warning"></i>
+                                {% elif 'butler' in tn.tenTienNghi.lower() or 'quản gia' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-user-tie text-gold"></i>
+                                {% elif 'bàn làm việc' in tn.tenTienNghi.lower() %}
+                                    <i class="fa-solid fa-desktop text-secondary"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-check-circle text-success"></i>
+                                {% endif %}
+                                <div class="name">{{ tn.tenTienNghi }}</div>
+                                {% if tn.moTa %}
+                                <div class="desc">{{ tn.moTa }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="row g-3">
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-wifi text-success"></i>
+                                <div class="name">Wifi tốc độ cao</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-tv text-gold"></i>
+                                <div class="name">TV 4K Ultra HD</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-mug-hot text-warning"></i>
+                                <div class="name">Bữa sáng miễn phí</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="amenity-item">
+                                <i class="fa-solid fa-snowflake text-info"></i>
+                                <div class="name">Điều hòa nhiệt độ</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- HÌNH ẢNH -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3"><i class="fa-solid fa-images text-gold me-2"></i>Hình Ảnh</h4>
+                    <div class="row g-3 gallery-grid">
+                        <div class="col-md-6">
+                            <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=800&auto=format&fit=crop" alt="Phòng ngủ" class="shadow-sm">
+                        </div>
+                        <div class="col-md-6">
+                            <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800&auto=format&fit=crop" alt="Phòng khách" class="shadow-sm">
+                        </div>
+                        <div class="col-md-4">
+                            <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=800&auto=format&fit=crop" alt="Nội thất" class="shadow-sm">
+                        </div>
+                        <div class="col-md-4">
+                            <img src="https://images.unsplash.com/photo-1590490360182-c33d955f4c79?q=80&w=800&auto=format&fit=crop" alt="Phòng tắm" class="shadow-sm">
+                        </div>
+                        <div class="col-md-4">
+                            <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=800&auto=format&fit=crop" alt="View" class="shadow-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ĐÁNH GIÁ -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0"><i class="fa-solid fa-star text-gold me-2"></i>Đánh Giá Khách Hàng</h4>
+                        <a href="{{ url_for('review_loai_phong', ma_loai=loai.maLoaiPhong) }}" class="btn btn-outline-warning btn-sm rounded-pill">
+                            Xem tất cả <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+
+                    {% if avg_rating %}
+                    <div class="bg-light rounded-3 p-3 mb-3 text-center">
+                        <div class="mb-1">
+                            {% for i in range(1, 6) %}
+                                {% if i <= avg_rating|round(0, 'floor') %}
+                                    <i class="fa-solid fa-star text-warning fs-4"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-star text-muted fs-4"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="fw-bold text-gold fs-5">{{ avg_rating|round(1) }} / 5.0</span>
+                        <span class="text-muted"> — {{ review_count }} đánh giá</span>
+                    </div>
+                    {% endif %}
+
+                    {% if reviews %}
+                    {% for review in reviews %}
+                    <div class="card review-card border-0 shadow-sm mb-2">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong><i class="fa-solid fa-user-circle text-muted me-1"></i>{{ review.khachhang.hoTen if review.khachhang else 'Khách hàng' }}</strong>
+                                    <div class="mt-1">
+                                        {% for i in range(1, 6) %}
+                                            {% if i <= review.rating %}
+                                                <i class="fa-solid fa-star text-warning small"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-star text-muted small"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ review.ngay.strftime('%d/%m/%Y') if review.ngay else '' }}</small>
+                            </div>
+                            {% if review.comment %}
+                            <p class="mb-0 mt-2 text-secondary small">{{ review.comment }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-3">
+                        <i class="fa-regular fa-comment-dots fs-1 text-muted"></i>
+                        <p class="text-muted mt-2 mb-0">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Booking Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow rounded-4 sticky-top" style="top: 80px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-center mb-3">Đặt Phòng</h5>
+
+                    <div class="text-center mb-3">
+                        <span class="fs-2 fw-bold text-gold">{{ "{:,.0f}".format(loai.giaCoBan) }} ₫</span>
+                        <span class="text-muted">/ đêm</span>
+                    </div>
+
+                    <hr>
+
+                    <ul class="list-unstyled mb-3 small">
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Loại phòng</span>
+                            <span class="fw-bold">{{ loai.tenLoaiPhong }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Sức chứa</span>
+                            <span class="fw-bold">{{ loai.sucChua }} người</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Diện tích</span>
+                            <span class="fw-bold">{{ loai.dienTich|int if loai.dienTich else '—' }} m²</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">Tình trạng</span>
+                            {% if so_phong_trong > 0 %}
+                            <span class="fw-bold text-success"><i class="fa-solid fa-check-circle me-1"></i>Còn phòng</span>
+                            {% else %}
+                            <span class="fw-bold text-danger"><i class="fa-solid fa-times-circle me-1"></i>Hết phòng</span>
+                            {% endif %}
+                        </li>
+                        {% if tien_nghis %}
+                        <li class="d-flex justify-content-between py-2">
+                            <span class="text-muted">Tiện nghi</span>
+                            <span class="fw-bold">{{ tien_nghis|length }} tiện nghi</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+
+                    <a href="/dat-phong/{{ loai.maLoaiPhong }}" class="btn btn-warning w-100 rounded-pill fw-bold py-3 mb-2 {{ 'disabled' if so_phong_trong == 0 }}">
+                        <i class="fa-solid fa-calendar-check me-2"></i>Đặt Phòng Ngay
+                    </a>
+
+                    <a href="/" class="btn btn-outline-secondary w-100 rounded-pill">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Quay Lại Trang Chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

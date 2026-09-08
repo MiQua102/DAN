@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Thanh Toán VNPay - Luxury Hotel{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5" style="margin-top: 120px !important;">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 text-center">
+                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418196384.png" alt="VNPay Logo" height="50">
+                    <h4 class="mt-3 fw-bold text-dark">Cổng Thanh Toán Trực Tuyến</h4>
+                    <p class="text-muted">An toàn, nhanh chóng và bảo mật</p>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info rounded-3">
+                        <i class="fa-solid fa-circle-info me-2"></i> Đơn đặt phòng <strong>{{ dp.maDatPhong }}</strong><br>
+                        Tổng cộng ({{ so_ngay }} đêm): <strong>{{ "{:,.0f}".format(tong_tien) }} ₫</strong><br>
+                        Cần thanh toán cọc (50%): <strong class="fs-5 text-danger">{{ "{:,.0f}".format(tien_coc) }} ₫</strong>
+                    </div>
+
+                    <form action="/thanh-toan-online/{{ dp.maDatPhong }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Chọn phương thức thanh toán:</label>
+                            
+                            <div class="form-check border rounded-3 p-3 mb-2 custom-radio-box">
+                                <input class="form-check-input ms-1 mt-2" type="radio" name="phuongThuc" id="momo" value="MoMo" checked>
+                                <label class="form-check-label ms-2 d-flex align-items-center" for="momo">
+                                    <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" width="40" class="me-3">
+                                    <div>
+                                        <strong>Chuyển khoản MoMo (Khuyên dùng)</strong><br>
+                                        <small class="text-muted">Thanh toán nhanh chóng, tự động cập nhật trạng thái qua ví điện tử MoMo</small>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="form-check border rounded-3 p-3 mb-2 custom-radio-box">
+                                <input class="form-check-input ms-1 mt-2" type="radio" name="phuongThuc" id="vnpay_atm" value="VNPay_ATM">
+                                <label class="form-check-label ms-2 d-flex align-items-center" for="vnpay_atm">
+                                    <i class="fa-solid fa-money-check-dollar fs-3 text-success me-3"></i>
+                                    <div>
+                                        <strong>Thẻ ATM / Tài khoản ngân hàng</strong><br>
+                                        <small class="text-muted">Thanh toán bằng thẻ nội địa (VNPAY)</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/lich-su-dat-phong" class="btn btn-light fw-bold px-4">Hủy Giao Dịch</a>
+                            <button type="submit" class="btn btn-primary fw-bold px-5" style="background-color: #005baa; border-color: #005baa;">
+                                <i class="fa-solid fa-shield-halved me-2"></i>Thanh Toán
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-radio-box:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+        border-color: #005baa !important;
+    }
+</style>
+{% endblock %}

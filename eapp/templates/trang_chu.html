@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}Trang Chủ - Luxury Hotel{% endblock %}
+
+
+{% block extra_css %}
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(rgba(18, 18, 18, 0.4), rgba(18, 18, 18, 0.8)),
+                    url('https://images.unsplash.com/photo-1542314831-c6a4d14ce8a1?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    .hero-text {
+        text-align: center;
+        color: white;
+        margin-top: -50px;
+    }
+    .hero-text h1 {
+        font-size: 4.5rem;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+    }
+    .hero-text p {
+        font-size: 1.2rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: var(--gold);
+    }
+    
+    /* Floating Booking Bar */
+    .booking-bar {
+        position: absolute;
+        bottom: -40px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: 80%;
+        background: #fff;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        z-index: 10;
+        border-top: 4px solid var(--gold);
+    }
+    .booking-bar label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        color: #777;
+    }
+    .booking-bar input, .booking-bar select {
+        border: none;
+        border-bottom: 1px solid #ddd;
+        border-radius: 0;
+        padding-left: 0;
+        font-size: 1.1rem;
+    }
+    .booking-bar input:focus, .booking-bar select:focus {
+        box-shadow: none;
+        border-color: var(--gold);
+    }
+    
+    /* Room Cards */
+    .room-card {
+        border-radius: 0;
+        transition: all 0.4s ease;
+        background: #fff;
+    }
+    .room-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    .room-img-wrapper {
+        overflow: hidden;
+        position: relative;
+    }
+    .room-img-wrapper img {
+        transition: transform 0.6s ease;
+    }
+    .room-card:hover .room-img-wrapper img {
+        transform: scale(1.08);
+    }
+    .room-price {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--gold);
+        color: #fff;
+        padding: 10px 20px;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        color: var(--dark-charcoal);
+        margin-bottom: 15px;
+    }
+    .section-subtitle {
+        color: var(--gold);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        margin-bottom: 40px;
+    }
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-text" data-aos="fade-up">
+        <p>{{ _('welcome_to') }}</p>
+        <h1>Luxury Hotel & Resort</h1>
+        <p class="text-white fs-6 mt-3" style="letter-spacing: 2px;">{{ _('slogan') if _('slogan') != 'slogan' else 'A Symphony of Elegance' }}</p>
+    </div>
+
+    <!-- Booking Bar -->
+    <div class="booking-bar d-none d-lg-block" data-aos="fade-up" data-aos-delay="200">
+        <form action="/" method="GET" class="row g-4 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">{{ _('checkin') }}</label>
+                <input type="date" class="form-control" name="ngayNhan" value="{{ ngay_nhan }}" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">{{ _('checkout') }}</label>
+                <input type="date" class="form-control" name="ngayTra" value="{{ ngay_tra }}" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">{{ _('guests') }}</label>
+                <select class="form-select" name="sucChua">
+                    <option value="">{{ _('all') }}</option>
+                    <option value="1" {% if suc_chua == '1' %}selected{% endif %}>1 {{ _('person') }}</option>
+                    <option value="2" {% if suc_chua == '2' %}selected{% endif %}>2 {{ _('person') }}</option>
+                    <option value="4" {% if suc_chua == '4' %}selected{% endif %}>{{ _('family') }}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-gold w-100 py-3">{{ _('check_room') }}</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Mobile Booking Search -->
+<div class="container d-block d-lg-none mt-4">
+    <div class="bg-white p-4 shadow-sm border-top border-gold" style="border-top-color: #D4AF37; border-top-width: 4px;">
+        <h5 class="font-serif text-center mb-4 text-gold">{{ _('quick_search') }}</h5>
+        <form action="/" method="GET">
+            <div class="mb-3">
+                <label class="small text-muted fw-bold">Ngày nhận</label>
+                <input type="date" class="form-control border-0 border-bottom rounded-0" name="ngayNhan" value="{{ ngay_nhan }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="small text-muted fw-bold">Ngày trả</label>
+                <input type="date" class="form-control border-0 border-bottom rounded-0" name="ngayTra" value="{{ ngay_tra }}" required>
+            </div>
+            <button type="submit" class="btn btn-gold w-100 mt-2">{{ _('check_room_now') }}</button>
+        </form>
+    </div>
+</div>
+
+<!-- Rooms Section -->
+<section id="phong" class="py-5" style="margin-top: 80px;">
+    <div class="container">
+        <div class="text-center" data-aos="fade-up">
+            <h2 class="section-title">{{ _('explore_rooms') }}</h2>
+            <p class="section-subtitle">{{ _('discover_rooms') }}</p>
+        </div>
+        
+        <div class="row g-4 mt-2">
+            {% if danh_sach_loai %}
+                {% for loai in danh_sach_loai %}
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                    <div class="card h-100 room-card border-0 shadow-sm">
+                        <div class="room-img-wrapper">
+                            <img src="{{ url_for('static', filename='uploads/' + loai.hinhAnh) if loai.hinhAnh else 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800&auto=format&fit=crop' }}" class="card-img-top rounded-0" alt="{{ loai.tenLoaiPhong }}">
+                            <div class="room-price font-serif">{{ format_currency(loai.giaCoBan) }}</div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="card-title font-serif fw-bold mb-0 text-dark">{{ loai.tenLoaiPhong }}</h4>
+                                {% set avg = avg_ratings.get(loai.maLoaiPhong) %}
+                                {% if avg %}
+                                <div class="text-gold small">
+                                    <i class="fa-solid fa-star"></i> {{ avg|round(1) }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <p class="text-muted small mb-4 border-bottom pb-3"><i class="fa-regular fa-user me-2"></i>{{ _('max') }} {{ loai.sucChua }} {{ _('guest') }} &nbsp; | &nbsp; <i class="fa-regular fa-square me-2"></i>{{ loai.dienTich }} m²</p>
+                            
+                            <div class="row g-2 mb-4 small text-secondary">
+                                <div class="col-6"><i class="fa-solid fa-wifi text-gold me-2"></i> Free Wifi</div>
+                                <div class="col-6"><i class="fa-solid fa-tv text-gold me-2"></i> Smart TV</div>
+                                <div class="col-6"><i class="fa-solid fa-mug-hot text-gold me-2"></i> Breakfast</div>
+                                <div class="col-6"><i class="fa-solid fa-wind text-gold me-2"></i> AC</div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 mt-auto">
+                                <a href="/chi-tiet-phong/{{ loai.maLoaiPhong }}" class="btn btn-outline-dark rounded-0 flex-grow-1 py-2" style="font-size: 0.85rem; letter-spacing: 1px;">CHI TIẾT</a>
+                                <a href="/dat-phong/{{ loai.maLoaiPhong }}{% if ngay_nhan and ngay_tra %}?ngayNhan={{ ngay_nhan }}&ngayTra={{ ngay_tra }}{% endif %}" class="btn btn-gold flex-grow-1 py-2" style="font-size: 0.85rem;">ĐẶT NGAY</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center text-muted py-5">
+                    <p>Hiện chưa có dữ liệu phòng. Vui lòng thêm từ trang Quản trị.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+{% if top_reviews %}
+<section class="py-5" style="background-color: var(--dark-charcoal); color: white;">
+    <div class="container py-4">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title text-white">{{ _('testimonials') }}</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.6);">{{ _('guest_testimonials') }}</p>
+        </div>
+        <div class="row g-4">
+            {% for review in top_reviews %}
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 150 }}">
+                <div class="p-4 border border-secondary text-center h-100 d-flex flex-column" style="background: rgba(255,255,255,0.02);">
+                    <div class="text-gold mb-3 fs-5">
+                        {% for i in range(1, 6) %}
+                            {% if i <= review.rating %}
+                                <i class="fa-solid fa-star"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star" style="color: rgba(255,255,255,0.2);"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="fst-italic mb-4 flex-grow-1" style="font-family: 'Playfair Display', serif; font-size: 1.1rem; line-height: 1.8;">"{{ review.comment }}"</p>
+                    <div>
+                        <h6 class="text-uppercase tracking-wide mb-1 text-gold" style="font-size: 0.85rem; letter-spacing: 2px;">{{ review.khachhang.hoTen if review.khachhang else 'Khách ẩn danh' }}</h6>
+                        <small style="color: rgba(255,255,255,0.4);">{{ review.ngay.strftime('%d/%m/%Y') }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
