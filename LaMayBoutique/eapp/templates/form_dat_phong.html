@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Xác Nhận Đặt Phòng - La Mây Boutique{% endblock %}
+
+{% block extra_css %}
+    .booking-card {
+        background: #fff;
+        border: none;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        border-radius: 0;
+    }
+    .booking-header {
+        background: var(--dark-charcoal);
+        color: var(--gold);
+        padding: 30px;
+        text-align: center;
+        border-bottom: 2px solid var(--gold);
+    }
+    .form-control, .form-select {
+        border-radius: 0;
+        border: 1px solid #ddd;
+        padding: 12px 15px;
+        font-family: 'Jost', sans-serif;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--gold);
+        box-shadow: none;
+    }
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #555;
+    }
+    .section-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 40px 0 20px;
+        color: var(--gold);
+    }
+    .section-divider::before, .section-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #eee;
+    }
+    .section-divider span {
+        padding: 0 15px;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-style: italic;
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container mb-5" style="margin-top: 120px;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <h2 class="mb-0 font-serif">Reservation</h2><p class="mb-0 text-white" style="letter-spacing: 2px; font-size:0.8rem; text-transform:uppercase;">Secure Your Stay</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Form action sẽ trỏ đến route xử lý đặt phòng chung -->
+                        <form action="/dat-phong/{{ loai_phong.maLoaiPhong }}" method="POST" id="formDatPhong">
+
+                            <!-- Ô CHỌN LOẠI PHÒNG LINH HOẠT -->
+                            <div class="mb-4 p-3 bg-light border-0 p-4 rounded-0">
+                                <label class="form-label form-label"><i class="fa-solid fa-bed me-2"></i>Chọn Loại Phòng Muốn Đặt:</label>
+                                <select name="maLoaiPhong" id="selectLoaiPhong" class="form-select form-select-lg fw-bold text-dark" onchange="doiLoaiPhong(this.value)">
+                                    <option value="{{ loai_phong.maLoaiPhong }}" selected>{{ loai_phong.tenLoaiPhong }} - {{ "{:,.0f}".format(loai_phong.giaCoBan) }} ₫ / đêm (Tối đa {{ loai_phong.sucChua }} người)</option>
+                                    {% if danh_sach_tat_ca_loai %}
+                                        {% for lp in danh_sach_tat_ca_loai %}
+                                            {% if lp.maLoaiPhong != loai_phong.maLoaiPhong %}
+                                                <option value="{{ lp.maLoaiPhong }}">{{ lp.tenLoaiPhong }} - {{ "{:,.0f}".format(lp.giaCoBan) }} ₫ / đêm (Tối đa {{ lp.sucChua }} người)</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="section-divider"><span>Guest Details</span></div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Họ và Tên</label>
+                                    <input type="text" class="form-control" name="hoTen" value="{{ khach_hang.hoTen if khach_hang else '' }}" placeholder="VD: Nguyễn Văn A" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Số Điện Thoại</label>
+                                    <input type="text" class="form-control" name="sdt" value="{{ khach_hang.sdt if khach_hang else '' }}" placeholder="VD: 0901234567" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Số CCCD / CMND</label>
+                                    <input type="text" class="form-control" name="cccd" value="{{ khach_hang.cccd if khach_hang else '' }}" placeholder="VD: 079123456789" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Email liên hệ</label>
+                                    <input type="email" class="form-control" name="email" value="{{ session.get('tenDangNhap') if session.get('tenDangNhap') else '' }}" placeholder="VD: example@gmail.com" required>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="section-divider"><span>Stay Information</span></div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Ngày Nhận Phòng (Dự kiến)</label>
+                                    <input type="date" class="form-control" name="ngayNhan" value="{{ ngay_nhan if ngay_nhan else '' }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Ngày Trả Phòng (Dự kiến)</label>
+                                    <input type="date" class="form-control" name="ngayTra" value="{{ ngay_tra if ngay_tra else '' }}" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Số Lượng Khách Ở</label>
+                                <input type="number" class="form-control" name="soLuongKhach" min="1" max="10" value="1" required>
+                                <small class="text-muted">Nhập số lượng người thực tế sẽ lưu trú.</small>
+                            </div>
+                        
+                        <div class="mb-4 p-3 border rounded bg-light">
+                            <label class="form-label fw-bold"><i class="fa-solid fa-ticket text-danger me-2"></i>Mã Giảm Giá / Voucher (Nếu có)</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control text-uppercase" id="voucherCodeInput" name="voucherCode" placeholder="Ví dụ: SUMMER2026">
+                                <button class="btn btn-outline-success fw-bold" type="button" id="btnCheckVoucher">Áp dụng</button>
+                            </div>
+                            <small id="voucherMessage" class="d-block mt-2"></small>
+                        </div>
+                            <div class="d-flex justify-content-end">
+                                <a href="/" class="btn btn-secondary me-2 px-4">Hủy</a>
+                                <button type="submit" class="btn btn-success fw-bold px-5"><i class="fa-solid fa-check me-2"></i>Xác Nhận Đặt Phòng</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script nhỏ giúp đổi đường dẫn form khi khách thay đổi lựa chọn loại phòng -->
+    <script>
+    function doiLoaiPhong(maLoaiMoi) {
+        const form = document.getElementById('formDatPhong');
+        form.action = '/dat-phong/' + maLoaiMoi;
+    }
+    
+    document.getElementById('btnCheckVoucher').addEventListener('click', function() {
+        const code = document.getElementById('voucherCodeInput').value;
+        const msg = document.getElementById('voucherMessage');
+        
+        if (!code) {
+            msg.innerHTML = '<span class="text-danger">Vui lòng nhập mã giảm giá!</span>';
+            return;
+        }
+        
+        fetch('/api/check-voucher', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ma_km: code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                msg.innerHTML = '<span class="text-success fw-bold"><i class="fa-solid fa-circle-check"></i> ' + data.message + '</span>';
+                document.getElementById('voucherCodeInput').classList.add('is-valid');
+                document.getElementById('voucherCodeInput').classList.remove('is-invalid');
+            } else {
+                msg.innerHTML = '<span class="text-danger fw-bold"><i class="fa-solid fa-circle-xmark"></i> ' + data.message + '</span>';
+                document.getElementById('voucherCodeInput').classList.add('is-invalid');
+                document.getElementById('voucherCodeInput').classList.remove('is-valid');
+            }
+        });
+    });
+</script>
+{% endblock %}

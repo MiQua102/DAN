@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Đánh Giá - La Mây Boutique{% endblock %}
+
+{% block extra_css %}
+.star-rating { display: flex; gap: 8px; flex-direction: row-reverse; justify-content: flex-end; }
+.star-rating input { display: none; }
+.star-rating label {
+    font-size: 2.2rem; color: #ddd; cursor: pointer; transition: color 0.2s, transform 0.15s;
+}
+.star-rating label:hover, .star-rating label:hover ~ label,
+.star-rating input:checked ~ label { color: #D4AF37; }
+.star-rating label:hover { transform: scale(1.15); }
+{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="margin-top: 80px;">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 text-center">
+                    <h3 class="fw-bold text-dark"><i class="fa-solid fa-star text-gold me-2"></i>Đánh Giá Trải Nghiệm</h3>
+                    <p class="text-muted">Chia sẻ cảm nhận của bạn về kỳ nghỉ</p>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Thông tin đơn -->
+                    <div class="bg-light rounded-3 p-3 mb-4">
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Mã đặt phòng</small>
+                                <p class="fw-bold mb-0">{{ dp.maDatPhong }}</p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Loại phòng</small>
+                                <p class="fw-bold mb-0">{{ loai_phong.tenLoaiPhong if loai_phong else 'N/A' }}</p>
+                            </div>
+                        </div>
+                        {% if phong %}
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <small class="text-muted">Phòng số</small>
+                                <p class="fw-bold mb-0">{{ phong.soPhong }}</p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Trạng thái</small>
+                                <p class="fw-bold mb-0 text-success">{{ dp.trangThai }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Flash messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <!-- Form đánh giá -->
+                    <form method="POST">
+                        <div class="mb-4 text-center">
+                            <label class="form-label fw-bold fs-5 mb-3">Bạn đánh giá bao nhiêu sao?</label>
+                            <div class="star-rating justify-content-center">
+                                {% for i in range(5, 0, -1) %}
+                                <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" {% if i == 5 %}checked{% endif %}>
+                                <label for="star{{ i }}" title="{{ i }} sao"><i class="fa-solid fa-star"></i></label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="comment" class="form-label fw-bold">Nhận xét của bạn</label>
+                            <textarea class="form-control rounded-3" id="comment" name="comment" rows="4"
+                                      placeholder="Chia sẻ trải nghiệm của bạn tại khách sạn..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg rounded-pill fw-bold">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Gửi Đánh Giá
+                            </button>
+                            <a href="{{ url_for('lich_su_dat_phong') }}" class="btn btn-outline-secondary rounded-pill">
+                                <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

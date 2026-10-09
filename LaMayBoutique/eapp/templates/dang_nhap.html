@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - La Mây Boutique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Thư viện Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.unsplash.com/photo-1542314831-c6a4d14d8c53?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); border-top: 4px solid #D4AF37; border-radius: 0;
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+        }
+        .login-header {
+            background: #1a1a1a; /* bg-dark */
+            color: #D4AF37; font-family: "Playfair Display", serif; letter-spacing: 2px; /* text-warning */
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h3 class="fw-bold mb-0"><i class="fa-solid fa-hotel me-2"></i>LA MÂY BOUTIQUE</h3>
+        </div>
+
+        <div class="p-4 p-md-5">
+            <h4 class="fw-bold text-center mb-4">Đăng Nhập Hệ Thống</h4>
+
+            <!-- Hiển thị thông báo lỗi nếu có -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <!-- Biến 'category' sẽ nhận giá trị 'success' hoặc 'danger' từ code Python truyền sang -->
+                          <div class="alert alert-{{ category if category else 'danger' }} alert-dismissible fade show" role="alert">
+                            {% if category == 'success' %}
+                              <i class="fa-solid fa-check-circle me-2"></i>
+                            {% else %}
+                              <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            {% endif %}
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+
+            <form action="/dang-nhap" method="POST">
+                <div class="mb-3">
+                    <label for="tenDangNhap" class="form-label fw-semibold">Tên đăng nhập</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" class="form-control" id="tenDangNhap" name="tenDangNhap" placeholder="Nhập tài khoản..." required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="matKhau" class="form-label fw-semibold">Mật khẩu</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" class="form-control" id="matKhau" name="matKhau" placeholder="Nhập mật khẩu..." required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100 fw-bold py-2 mb-3 text-white" style="letter-spacing: 1px;">Đăng Nhập</button>
+
+                <div class="text-center mt-3">
+                    <a href="/" class="text-decoration-none text-muted"><i class="fa-solid fa-arrow-left me-1"></i> Quay lại trang chủ</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

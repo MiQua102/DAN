@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Gọi Dịch Vụ - La Mây Boutique{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container py-3" style="margin-top: 120px;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-header bg-dark text-white text-center py-4 rounded-top-4">
+                        <h3 class="fw-bold mb-0 text-warning"><i class="fa-solid fa-bell-concierge me-2"></i>Dịch Vụ Phòng</h3>
+                        <p class="mb-0 mt-1">Mã đơn đặt: {{ dp.maDatPhong }}</p>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <!-- Form khách chọn dịch vụ -->
+                        <form method="POST" class="row g-3 mb-4 p-3 bg-white border rounded-3 shadow-sm">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Chọn Món / Dịch Vụ:</label>
+                                <select name="maDV" class="form-select" required>
+                                    {% for dv in danh_sach_dv %}
+                                    <option value="{{ dv.maDV }}">{{ dv.tenDV }} - {{ "{:,.0f}".format(dv.donGia) }} ₫ / {{ dv.donViTinh }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Số Lượng:</label>
+                                <input type="number" name="soLuong" value="1" min="1" class="form-control" required>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-warning w-100 fw-bold"><i class="fa-solid fa-plus"></i> Gọi</button>
+                            </div>
+                        </form>
+
+                        <!-- Bảng lịch sử dịch vụ khách đã gọi -->
+                        <h5 class="fw-bold mb-3">Dịch vụ đã gọi trong đơn này:</h5>
+                        <table class="table table-bordered text-center align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tên Dịch Vụ</th>
+                                    <th>Số Lượng</th>
+                                    <th>Đơn Giá</th>
+                                    <th>Thành Tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sd in da_dung %}
+                                <tr>
+                                    <td>{{ sd.dichvu.tenDV }}</td>
+                                    <td>{{ sd.soLuong }}</td>
+                                    <td>{{ "{:,.0f}".format(sd.donGia) }} ₫</td>
+                                    <td class="fw-bold text-gold">{{ "{:,.0f}".format(sd.thanhTien) }} ₫</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-muted py-3">Bạn chưa gọi dịch vụ nào cho đơn này.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

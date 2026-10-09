@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Dịch Vụ - La Mây Boutique</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f5f0; font-family: 'Jost', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-serif { font-family: 'Playfair Display', serif !important; }
+        .sidebar { min-height: 100vh; background-color: #1a1a1a; color: white; border-right: 2px solid #D4AF37; }
+        .sidebar a { color: #ccc; text-decoration: none; padding: 15px 20px; display: block; transition: 0.3s; font-size: 0.95rem; letter-spacing: 1px; }
+        .sidebar a:hover, .sidebar a.active { background-color: #2a2a2a; color: #D4AF37; border-left: 4px solid #D4AF37; }
+        .stat-card { border-radius: 0; border-top: 3px solid #D4AF37; color: #333; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); background: #fff; }
+        .bg-brown { background-color: #1a1a1a !important; color: white !important; }
+        .text-gold { color: #D4AF37 !important; }
+        .btn-warning { background-color: #D4AF37 !important; border-color: #D4AF37 !important; color: white !important; border-radius: 0; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        .btn-warning:hover { background-color: #B5952F !important; border-color: #B5952F !important; color: white !important; }
+        
+        .card { border-radius: 0; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .card-header { border-radius: 0 !important; background-color: #1a1a1a !important; color: #D4AF37 !important; font-family: 'Playfair Display', serif; letter-spacing: 1px; border-bottom: 2px solid #D4AF37; }
+        
+        .table { font-size: 0.95rem; }
+        .table thead th { background-color: #1a1a1a !important; color: #D4AF37 !important; font-family: 'Playfair Display', serif; font-weight: normal; letter-spacing: 1px; }
+        
+        .btn-primary, .btn-success, .btn-info { background-color: #1a1a1a !important; border-color: #1a1a1a !important; color: #D4AF37 !important; border-radius: 0; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .btn-primary:hover, .btn-success:hover, .btn-info:hover { background-color: #D4AF37 !important; border-color: #D4AF37 !important; color: white !important; }
+        .btn-danger { border-radius: 0; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar" style="width: 250px;">
+            <div class="text-center py-4 border-bottom border-secondary">
+                <h4 class="font-serif fw-bold text-gold mb-0" style="letter-spacing: 3px;"><i class="fa-solid fa-hotel me-2"></i>LA MÂY BOUTIQUE</h4>
+            </div>
+            <div class="p-3 border-bottom border-secondary d-flex align-items-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle me-2" width="40">
+                <div>
+                    <div class="fw-bold">{{ nhan_vien.hoTen }}</div>
+                    <small class="text-success"><i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> Online</small>
+                </div>
+            </div>
+            <nav class="mt-3">
+                <a href="/quan-tri"><i class="fa-solid fa-gauge-high me-2"></i> Tổng Quan</a>
+                <a href="/quan-ly-phong"><i class="fa-solid fa-bed me-2"></i> Quản Lý Phòng</a>
+                <a href="/danh-sach-phong"><i class="fa-solid fa-layer-group me-2"></i> Danh Sách Phòng</a>
+                <a href="/quan-ly-dich-vu" class="active"><i class="fa-solid fa-bell-concierge me-2"></i> Quản Lý Dịch Vụ</a>
+                <a href="/quan-ly-khach-hang"><i class="fa-solid fa-users me-2"></i> Khách Hàng</a>
+                <a href="/quan-ly-dat-phong"><i class="fa-solid fa-calendar-check me-2"></i> Đơn Đặt Phòng</a>
+                <a href="quan-ly-hoa-don"><i class="fa-solid fa-file-invoice-dollar me-2"></i> Hóa Đơn</a>
+        {% if is_admin %}
+            <a href="/quan-ly-khuyen-mai"><i class="fa-solid fa-ticket me-2"></i> Khuyến Mãi (Voucher)</a>
+            <a href="/quan-ly-nhan-su"><i class="fa-solid fa-user-tie me-2"></i> Quản Lý Nhân Sự</a>
+        {% endif %}
+
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1">
+            <nav class="navbar navbar-expand bg-white shadow-sm px-4 py-3 mb-4">
+                <h5 class="mb-0 fw-bold">Danh sách Dịch Vụ</h5>
+            </nav>
+
+            <div class="container-fluid px-4">
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                      <div class="alert alert-info alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 fw-bold text-gold">Cơ sở dữ liệu: Bảng Dịch Vụ</h6>
+                        {% if is_admin %}
+                        <button class="btn btn-sm rounded-0 btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalThemDV">
+                            <i class="fa-solid fa-plus"></i> Thêm Dịch Vụ
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover table-striped m-0 align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Mã DV</th>
+                                    <th>Tên Dịch Vụ</th>
+                                    <th>Đơn Giá</th>
+                                    <th>Đơn Vị Tính</th>
+                                    {% if is_admin %}
+                                    <th class="text-center">Thao Tác</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dv in danh_sach_dv %}
+                                <tr>
+                                    <td class="fw-bold">{{ dv.maDV }}</td>
+                                    <td>{{ dv.tenDV }}</td>
+                                    <td class="text-danger fw-bold">{{ "{:,.0f}".format(dv.donGia) if dv.donGia else 0 }} ₫</td>
+                                    <td>{{ dv.donViTinh }}</td>
+                                    {% if is_admin %}
+                                    <td class="text-center">
+                                        <a href="/quan-ly-dich-vu/sua/{{ dv.maDV }}" class="btn btn-sm rounded-0 btn-warning">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                        <a href="/quan-ly-dich-vu/xoa/{{ dv.maDV }}" class="btn btn-sm rounded-0 btn-danger" onclick="return confirm('Ní có chắc muốn xóa dịch vụ này không?')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">Chưa có dịch vụ nào. Hãy thêm mới!</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Dịch Vụ -->
+    <div class="modal fade" id="modalThemDV" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-brown text-white">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-plus-circle me-2"></i>Thêm Dịch Vụ Mới</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/quan-ly-dich-vu/them" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mã Dịch Vụ</label>
+                            <input type="text" class="form-control" name="maDV" placeholder="VD: DV01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Dịch Vụ</label>
+                            <input type="text" class="form-control" name="tenDV" placeholder="VD: Giặt ủi, Nước suối..." required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Đơn Giá (VND)</label>
+                                <input type="number" class="form-control" name="gia" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Đơn Vị Tính</label>
+                                <input type="text" class="form-control" name="donVi" placeholder="VD: Chai, Lần, Giờ..." required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-success fw-bold">Lưu Dữ Liệu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

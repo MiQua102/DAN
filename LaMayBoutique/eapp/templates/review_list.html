@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Đánh Giá Khách Hàng - La Mây Boutique{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="margin-top: 80px;">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h2 class="fw-bold"><i class="fa-solid fa-star text-gold me-2"></i>Đánh Giá Khách Hàng</h2>
+                {% if loai is defined and loai %}
+                <p class="text-muted fs-5">{{ loai.tenLoaiPhong }}</p>
+                {% elif dp is defined and dp %}
+                <p class="text-muted">Đơn đặt phòng: <strong>{{ dp.maDatPhong }}</strong></p>
+                {% endif %}
+            </div>
+
+            <!-- Average Rating Card -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body text-center py-4">
+                    {% if avg %}
+                    <div class="mb-2">
+                        {% for i in range(1, 6) %}
+                            {% if i <= avg|round(0, 'floor') %}
+                                <i class="fa-solid fa-star text-warning fs-3"></i>
+                            {% elif i - avg < 1 and i - avg > 0 %}
+                                <i class="fa-solid fa-star-half-stroke text-warning fs-3"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star text-muted fs-3"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <h3 class="fw-bold text-gold mb-1">{{ avg|round(1) }} / 5.0</h3>
+                    <p class="text-muted mb-0">Dựa trên {{ reviews|length }} đánh giá</p>
+                    {% else %}
+                    <div class="py-2">
+                        <i class="fa-regular fa-star text-muted fs-1"></i>
+                        <p class="text-muted mt-2 mb-0">Chưa có đánh giá nào</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Reviews List -->
+            {% if reviews %}
+            {% for review in reviews %}
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="fw-bold mb-1">
+                                <i class="fa-solid fa-user-circle text-muted me-1"></i>
+                                {{ review.khachhang.hoTen if review.khachhang else 'Khách hàng' }}
+                            </h6>
+                            <small class="text-muted">
+                                <i class="fa-regular fa-clock me-1"></i>
+                                {{ review.ngay.strftime('%d/%m/%Y %H:%M') if review.ngay else '' }}
+                            </small>
+                        </div>
+                        <div>
+                            {% for i in range(1, 6) %}
+                                {% if i <= review.rating %}
+                                    <i class="fa-solid fa-star text-warning"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-star text-muted"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if review.comment %}
+                    <p class="mb-0 mt-2 text-secondary">{{ review.comment }}</p>
+                    {% else %}
+                    <p class="mb-0 mt-2 text-muted fst-italic">Không có nhận xét</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center py-5">
+                    <i class="fa-regular fa-comment-dots fs-1 text-muted mb-3"></i>
+                    <h5 class="text-muted">Chưa có đánh giá nào</h5>
+                    <p class="text-muted">Hãy là người đầu tiên đánh giá!</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Back button -->
+            <div class="text-center mt-4">
+                <a href="{{ url_for('trang_chu') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Về Trang Chủ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Lập Hóa Đơn - La Mây Boutique{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lập Hóa Đơn - La Mây Boutique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <div class="container py-5" style="margin-top: 120px;">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow border-0 rounded-4">
+                    <!-- Đầu Bill -->
+                    <div class="card-header bg-dark text-white text-center py-4 rounded-top-4">
+                        <h2 class="fw-bold mb-0 text-warning"><i class="fa-solid fa-file-invoice-dollar me-2"></i>HÓA ĐƠN THANH TOÁN</h2>
+                        <p class="mb-0 mt-2">LA MÂY BOUTIQUE - Đẳng cấp nghỉ dưỡng</p>
+                    </div>
+
+                    <!-- Thân Bill -->
+                    <div class="card-body p-5">
+                        <div class="row mb-4">
+                            <div class="col-sm-6">
+                                <h6 class="mb-2 text-muted">Thông tin khách hàng:</h6>
+                                <div class="fw-bold fs-5">{{ kh.hoTen }}</div>
+                                <div>SĐT: {{ kh.sdt or 'Không có' }}</div>
+                                <div>CCCD: {{ kh.cccd or 'Không có' }}</div>
+                            </div>
+                            <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                                <h6 class="mb-2 text-muted">Mã Đặt Phòng:</h6>
+                                <div class="fw-bold text-gold fs-5">{{ dp.maDatPhong }}</div>
+                                <div><small>Nhân viên lập: {{ nhan_vien.hoTen }}</small></div>
+                                <div><small>Ngày lập: {{ ngay_tra_thuc_te.strftime('%d/%m/%Y %H:%M') }}</small></div>
+                            </div>
+                        </div>
+
+                        <!-- Bảng tính tiền phòng -->
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr class="text-center">
+                                    <th>Số Phòng</th>
+                                    <th>Thời gian ở</th>
+                                    <th>Đơn giá / Đêm</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="text-center align-middle">
+                                    <td>
+                                        <strong class="fs-5">{{ phong.soPhong if phong else 'Đang cập nhật' }}</strong>
+                                    </td>
+                                    <td>
+                                        <div>Nhận: {{ dp.ngayNhanDuKien.strftime('%d/%m/%Y') }}</div>
+                                        <div>Trả: {{ ngay_tra_thuc_te.strftime('%d/%m/%Y') }}</div>
+                                        <div class="text-danger fw-bold mt-1">Tổng: {{ so_ngay }} ngày</div>
+                                    </td>
+                                    <td>{{ "{:,.0f}".format(chi_tiet.donGiaPhong if chi_tiet else 0) }} ₫</td>
+                                    <td class="fw-bold text-gold fs-5">{{ "{:,.0f}".format(tien_phong) }} ₫</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Tổng tiền -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <table class="table table-borderless w-auto">
+                                <tr>
+                                    <td class="text-end text-muted pb-2 pe-4">Tiền phòng:</td>
+                                    <td class="text-end fw-bold">{{ "{:,.0f}".format(tien_phong) }} ₫</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end text-muted pb-2 pe-4">Phụ thu dịch vụ:</td>
+                                    <td class="text-end fw-bold">0 ₫</td>
+                                </tr>
+                                {% if tien_giam_gia > 0 %}
+                                <tr>
+                                    <td class="text-end text-muted pb-2 pe-4">Giảm giá (Voucher):</td>
+                                    <td class="text-end fw-bold text-success">- {{ "{:,.0f}".format(tien_giam_gia) }} ₫</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td class="text-end text-muted border-bottom pb-3 pe-4">Đã đặt cọc:</td>
+                                    <td class="text-end fw-bold text-success border-bottom pb-3">- {{ "{:,.0f}".format(tien_da_coc) }} ₫</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end fw-bold fs-4 text-danger pt-3 pe-4">CẦN THANH TOÁN:</td>
+                                    <td class="text-end fw-bold fs-4 text-danger pt-3">{{ "{:,.0f}".format(con_lai) }} ₫</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Nút thao tác -->
+                    <div class="card-footer bg-white border-0 p-4 rounded-bottom-4">
+                        <form action="/thanh-toan/{{ dp.maDatPhong }}" method="POST">
+                            <div class="mb-4 p-3 border rounded-3 bg-light">
+                                <h6 class="fw-bold mb-3">Hình thức thanh toán:</h6>
+                                <div class="d-flex gap-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="phuongThuc" id="tien_mat" value="Tiền mặt" checked>
+                                        <label class="form-check-label fw-bold d-flex align-items-center" for="tien_mat">
+                                            <i class="fa-solid fa-money-bill-wave text-success me-2"></i> Tiền mặt
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="phuongThuc" id="momo_qr" value="MoMo">
+                                        <label class="form-check-label fw-bold d-flex align-items-center" for="momo_qr">
+                                            <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" width="20" class="me-2"> Quét mã MoMo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between text-center">
+                                <a href="/quan-ly-hoa-don" class="btn btn-secondary px-4 fw-bold">Quay Lại</a>
+        
+
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary px-4 fw-bold me-2" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> In Bill</button>
+                                    <button type="submit" class="btn btn-success px-4 fw-bold"><i class="fa-solid fa-check me-1"></i> Xác Nhận Thanh Toán</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
